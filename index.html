@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פייתון ELI5: יסודות התכנות בפשטות</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ======================== 
+           הגדרות בסיס ורספונסיביות
+           ======================== */
+        :root {
+            --primary-blue: #4A90E2;
+            --secondary-blue: #7FB3FF;
+            --light-bg: #F5F9FF;
+            --concept-bg: #E8F4FF;
+            --code-bg: #2D3748;
+            --accent-yellow: #FFD166;
+            --accent-green: #06D6A0;
+            --accent-red: #EF476F;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+        }
+
+        body { 
+            font-family: 'Segoe UI', 'Arial', sans-serif; 
+            line-height: 1.6; 
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #E8F4FF 0%, #F5F9FF 100%);
+            color: var(--text-dark);
+            font-size: 16px;
+        }
+        
+        .container { 
+            width: 95%; 
+            max-width: 900px; 
+            margin: 20px auto; 
+            background: #fff; 
+            padding: 30px;
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); 
+        }
+
+        @media (max-width: 600px) {
+            body { font-size: 15px; }
+            .container { padding: 20px; margin: 10px auto; }
+        }
+
+        /* כותרות */
+        h1, h2, h3 { 
+            color: var(--primary-blue); 
+            margin-top: 25px;
+        }
+        
+        h1 { 
+            font-size: 2.2em; 
+            text-align: center;
+            border-bottom: 3px dashed var(--accent-yellow);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        h2 { 
+            font-size: 1.6em; 
+            border-bottom: 2px solid var(--secondary-blue);
+            padding-bottom: 8px;
+        }
+        
+        h3 { 
+            font-size: 1.3em; 
+            color: var(--text-dark);
+        }
+
+        .intro {
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            color: var(--text-light);
+        }
+
+        .concept { 
+            margin-bottom: 20px; 
+            padding: 20px; 
+            border-radius: 12px;
+            background-color: var(--concept-bg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        
+        .concept:hover {
+            transform: translateY(-3px);
+        }
+        
+        .concept-icon {
+            font-size: 1.5em;
+            margin-left: 10px;
+            color: var(--primary-blue);
+        }
+
+        /* ======================== 
+           עיצוב קוד 
+           ======================== */
+        code, pre {
+            background-color: var(--code-bg);
+            color: #E2E8F0;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            direction: ltr; 
+            text-align: left; 
+            word-wrap: break-word; 
+            white-space: pre-wrap; 
+            font-size: 0.95em;
+            border-left: 4px solid var(--accent-yellow);
+        }
+        
+        pre {
+            padding: 18px;
+            overflow-x: auto;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .code-comment {
+            color: #81E6D9;
+        }
+
+        .code-string {
+            color: #FEB2B2;
+        }
+
+        .code-function {
+            color: #90CDF4;
+        }
+
+        .indentation-example {
+            background-color: #2D3748;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .indentation-marker {
+            color: var(--accent-green);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* ======================== 
+           עיצוב כיווץ (Collapsible)
+           ======================== */
+        .collapsible {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: right;
+            outline: none;
+            font-size: 1.2em;
+            margin-top: 20px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .collapsible:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .collapsible-text {
+            flex-grow: 1;
+            text-align: right;
+            padding-right: 15px;
+            font-weight: bold;
+        }
+
+        .collapsible-icon {
+            font-size: 1.5em;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .active .collapsible-icon {
+            transform: rotate(45deg); 
+        }
+
+        .content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out; 
+            background-color: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        /* ======================== 
+           עיצוב להדפסה (@media print)
+           ======================== */
+        @media print {
+            body { background-color: #fff; color: #000; font-size: 12pt; }
+            .container { box-shadow: none; border: none; }
+            .collapsible { display: none; }
+            .content {
+                max-height: none !important; 
+                overflow: visible;
+                background-color: #fff;
+                padding: 10px 0;
+                border: none;
+            }
+             code, pre {
+                background-color: #f0f0f0;
+                color: #000;
+                border: 1px solid #ddd;
+            }
+        }
+        
+        /* ======================== 
+           אלמנטים נוספים
+           ======================== */
+        .tip-box {
+            background-color: #FFF9DB;
+            border-right: 4px solid var(--accent-yellow);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .tip-title {
+            font-weight: bold;
+            color: #E67700;
+            margin-bottom: 5px;
+        }
+        
+        .example-box {
+            background-color: #E3F2FD;
+            border-right: 4px solid var(--primary-blue);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .example-title {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+        
+        .warning-box {
+            background-color: #FFE8E8;
+            border-right: 4px solid var(--accent-red);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .warning-title {
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #CBD5E0;
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>יסודות פייתון: מוסברים בפשטות 🐍</h1>
+        <p class="intro">מדריך מקיף ליסודות פייתון, מובנים בצורה ברורה ופשוטה לכל לומד מתחיל</p>
+
+        <button type="button" class="collapsible">
+            <span class="collapsible-text">1. 📚 יסודות: משתנים והדפסה</span>
+            <span class="collapsible-icon">+</span>
+        </button>
+        <div class="content">
+            <h2>יסודות: משתנים והדפסה</h2>
+            
+            <div class="concept">
+                <h3><i class="fas fa-box concept-icon"></i> אחסון מידע - משתנים (Variables)</h3>
+                <p><strong>משתנה</strong> הוא כלי לאחסון מידע בתוך התוכנית. ניתן לחשוב עליו כעל <strong>תווית</strong> שמצביעה על ערך מסוים. הפונקציה <code>print()</code> משמשת להצגת המידע על המסך.</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה:</div>
+                    <pre><code>שם_משתמש = <span class="code-string">"דוד"</span>
+גיל = 32
+
+<span class="code-comment"># f-string מאפשר שילוב של טקסט ומשתנים</span>
+print(<span class="code-string">f"השם הוא {שם_משתמש} והגיל הוא {גיל}."</span>)</code></pre>
+                </div>
+                
+                <div class="tip-box">
+                    <div class="tip-title">💡 טיפ:</div>
+                    <p>מומלץ לתת למשתנים שמות משמעותיים שמסבירים מה הם מכילים. זה עוזר לקרוא ולהבין את הקוד אחר כך.</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="collapsible">
+            <span class="collapsible-text">2. ⌨️ קלט משתמש ופעולות מתמטיות</span>
+            <span class="collapsible-icon">+</span>
+        </button>
+        <div class="content">
+            <h2>קלט משתמש ופעולות מתמטיות</h2>
+            
+            <div class="concept">
+                <h3><i class="fas fa-keyboard concept-icon"></i> קבלת נתונים מהמשתמש (input())</h3>
+                <p>הפונקציה <code>input()</code> מאפשרת לקבל מידע מהמשתמש בזמן ריצת התוכנית. חשוב לזכור: כל קלט שמתקבל הוא מסוג <strong>טקסט</strong> (string). אם רוצים להשתמש בו כמספר, צריך להמיר אותו בעזרת <code>int()</code> (למספר שלם) או <code>float()</code> (למספר עשרוני).</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה:</div>
+                    <pre><code><span class="code-comment"># קבלת קלט מהמשתמש ושמירה במשתנה</span>
+שם = input(<span class="code-string">"מה שמך? "</span>)
+print(<span class="code-string">f"שלום, {שם}!"</span>)
+
+<span class="code-comment"># המרת קלט למספר שלם</span>
+מספר_כסף = int(input(<span class="code-string">"כמה כסף יש לך? "</span>))
+print(<span class="code-string">f"עוד 5 שקלים זה: {מספר_כסף + 5}"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="concept">
+                <h3><i class="fas fa-calculator concept-icon"></i> 🧮 פעולות מתמטיות</h3>
+                <p>פייתון תומכת בכל הפעולות המתמטיות הבסיסיות. הנה הנפוצות ביותר:</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה:</div>
+                    <pre><code>מספר1 = 10 
+מספר2 = 3
+
+<span class="code-comment"># חיבור: +</span>
+תוצאת_חיבור = מספר1 + מספר2  
+
+<span class="code-comment"># חזקה: ** (כפל חוזר)</span>
+תוצאת_חזקה = מספר1 ** 2 
+
+<span class="code-comment"># מודולו: % (שארית חלוקה)</span>
+<span class="code-comment"># 10 לחלק ל-3 זה 3 עם שארית 1</span>
+תוצאת_מודולו = מספר1 % מספר2 
+
+print(<span class="code-string">f"תוצאת המודולו: {תוצאת_מודולו}"</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="collapsible">
+            <span class="collapsible-text">3. 🚦 בקרת זרימה: תנאים ולולאות</span>
+            <span class="collapsible-icon">+</span>
+        </button>
+        <div class="content">
+            <h2>בקרת זרימה: משפטי תנאי ולולאות</h2>
+            
+            <div class="concept">
+                <h3><i class="fas fa-code-branch concept-icon"></i> משפטי תנאי (if, elif, else)</h3>
+                <p>משפטי תנאי מאפשרים לתוכנית לקבל החלטות לפי תנאים שונים. המבנה הבסיסי כולל: <strong>if</strong> (אם התנאי מתקיים), <strong>elif</strong> (אחרת, אם תנאי אחר מתקיים), <strong>else</strong> (בכל מקרה אחר).</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה:</div>
+                    <pre><code>צבע_רמזור = <span class="code-string">"צהוב"</span> 
+
+if צבע_רמזור == <span class="code-string">"אדום"</span>:
+    print(<span class="code-string">"עצור!"</span>)
+elif צבע_רמזור == <span class="code-string">"צהוב"</span>:
+    print(<span class="code-string">"התכונן..."</span>)
+else:
+    print(<span class="code-string">"סע!"</span>)</code></pre>
+                </div>
+            </div>
+
+            <div class="concept">
+                <h3><i class="fas fa-redo-alt concept-icon"></i> שילוב: לולאות תנאי (for + if/elif/else)</h3>
+                <p>לולאת <code>for</code> מאפשרת לחזור על פעולה מספר פעמים, ובכל איטרציה ניתן לבדוק תנאים שונים.</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה:</div>
+                    <pre><code>מחזור_אורות = [<span class="code-string">"אדום"</span>, <span class="code-string">"צהוב"</span>, <span class="code-string">"ירוק"</span>]
+
+for צבע in מחזור_אורות:
+    if צבע == <span class="code-string">"אדום"</span>:
+        print(<span class="code-string">f"🔴 {צבע}: עוצרים."</span>)
+    elif צבע == <span class="code-string">"צהוב"</span>:
+        print(<span class="code-string">f"🟡 {צבע}: מתכוננים."</span>)
+    else: 
+        print(<span class="code-string">f"🟢 {צבע}: נוסעים."</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="collapsible">
+            <span class="collapsible-text">4. ✏️ כלים שימושיים: הערות ואינדנטציה</span>
+            <span class="collapsible-icon">+</span>
+        </button>
+        <div class="content">
+            <h2>כלים שימושיים: הערות ואינדנטציה</h2>
+            
+            <div class="concept">
+                <h3><i class="fas fa-comment concept-icon"></i> הערות בקוד (# - Comments)</h3>
+                <p>הערות בקוד מתחילות בסימן <strong>#</strong>. המחשב מתעלם מהן לחלוטין - הן נועדו עבורנו, המתכנתים, כדי לתעד ולהסביר את מה שהקוד עושה.</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה:</div>
+                    <pre><code><span class="code-comment"># המשתנה הזה מייצג את גובה המשתמש</span>
+גובה = 175 
+
+if גובה > 140:
+    <span class="code-comment"># בודק אם מותר לעלות למתקן</span>
+    print(<span class="code-string">"מותר לעלות"</span>)</code></pre>
+                </div>
+                
+                <div class="tip-box">
+                    <div class="tip-title">💡 טיפ:</div>
+                    <p>הערות טובות הן קריטיות לתחזוקת קוד. הן עוזרות לנו ולאחרים להבין את הלוגיקה גם אחרי זמן רב.</p>
+                </div>
+            </div>
+
+            <div class="concept">
+                <h3><i class="fas fa-indent concept-icon"></i> אינדנטציה (Indentation) - הזחה</h3>
+                <p><strong>אינדנטציה</strong> היא אחת התכונות הייחודיות והחשובות ביותר בפייתון. בפייתון, <strong>ריווחים ותחילת שורה</strong> קובעים את המבנה של הקוד, בניגוד לשפות אחרות שמשתמשות בסוגריים מסולסלים.</p>
+                
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה נכונה:</div>
+                    <div class="indentation-example">
+                        <div><span class="indentation-marker">│</span>if True:</div>
+                        <div><span class="indentation-marker">│</span><span class="indentation-marker">└──</span>print("זה עובד!")  <span class="code-comment"># ← 4 רווחים או Tab</span></div>
+                        <div><span class="indentation-marker">│</span><span class="indentation-marker">└──</span>print("גם זה")     <span class="code-comment"># ← אותה רמת הזחה</span></div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <div class="warning-title">⚠️ שגיאה נפוצה:</div>
+                    <div class="indentation-example">
+                        <div><span class="indentation-marker">│</span>if True:</div>
+                        <div><span class="indentation-marker">│</span>print("זה יגרום לשגיאה!")  <span class="code-comment"># ← אין הזחה</span></div>
+                    </div>
+                    <p>פייתון תזרוק שגיאת <code>IndentationError</code> במקרה הזה!</p>
+                </div>
+
+                <div class="tip-box">
+                    <div class="tip-title">💡 כללי הזהב לאינדנטציה:</div>
+                    <ul>
+                        <li><strong>השתמש ב-4 רווחים</strong> לכל רמת הזחה (זו המוסכמה המקובלת)</li>
+                        <li>אל תערבב <strong>רווחים ו-Tab</strong> - בחר אחד ושמור עליו</li>
+                        <li>קוד באותה רמת הזחה שייך לאותו <strong>בלוק</strong></li>
+                        <li>אינדנטציה קובעת מה שייך ל-if, for, while, פונקציות, וכיתות</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">📝 דוגמה מורכבת יותר:</div>
+                    <pre><code>גיל = 15
+
+if גיל >= 18:
+    print(<span class="code-string">"אתה בוגר"</span>)
+    print(<span class="code-string">"מותר לך להצביע"</span>)
+else:
+    print(<span class="code-string">"אתה עדיין קטין"</span>)
+    if גיל >= 16:
+        print(<span class="code-string">"אבל מותר לך לעבוד"</span>)
+    else:
+        print(<span class="code-string">"עליך להתרכז בלימודים"</span>)</code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🎉 כל הכבוד! התחלתם את המסע בעולם התכנות עם פייתון.</p>
+            <p>מוסבר בפשטות - מובן בקלות 💫</p>
+        </div>
+    </div>
+
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                var content = this.nextElementSibling;
+                this.classList.toggle("active");
+                
+                // אנימציה
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                    content.style.paddingTop = "0";
+                    content.style.paddingBottom = "0";
+                } else {
+                    content.style.paddingTop = "20px";
+                    content.style.paddingBottom = "20px";
+                    content.style.maxHeight = content.scrollHeight + 40 + "px";
+                } 
+            });
+        }
+    </script>
+</body>
+</html>
