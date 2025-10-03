@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הדגמת לולאות בפייתון</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(90deg, #182848 0%, #4b6cb7 100%);
+            --card-header-gradient: linear-gradient(90deg, #4a6491 0%, #2c3e50 100%);
+            --run-btn-gradient: linear-gradient(90deg, #2980b9 0%, #3498db 100%);
+            --run-btn-hover: linear-gradient(90deg, #1c6ea4 0%, #2980b9 100%);
+            --body-bg: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            --card-bg: white;
+            --text-color: #333;
+            --output-bg: #1e1e1e;
+            --output-text: #d4d4d4;
+            --success-color: #a6e22e;
+            --error-color: #e74c3c;
+            --border-color: #eee;
+            --trinket-bg: #e1f0fa;
+            --trinket-color: #2980b9;
+        }
+        
+        [dir="ltr"] {
+            --primary-gradient: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            --card-header-gradient: linear-gradient(90deg, #2c3e50 0%, #4a6491 100%);
+            --run-btn-gradient: linear-gradient(90deg, #3498db 0%, #2980b9 100%);
+            --run-btn-hover: linear-gradient(90deg, #2980b9 0%, #1c6ea4 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--body-bg);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Language Switch */
+        .language-switch {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 5px;
+            display: flex;
+        }
+        
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn.active {
+            background: var(--run-btn-gradient);
+            color: white;
+        }
+        
+        /* Top Navigation */
+        .top-nav {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 15px 0;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 70px;
+            z-index: 900;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-color);
+            background: #f0f5ff;
+            padding: 10px 15px;
+            border-radius: 30px;
+            white-space: nowrap;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: var(--run-btn-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .intro {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .intro p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .example-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: var(--card-header-gradient);
+            color: white;
+            padding: 18px 25px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-content {
+            padding: 25px;
+        }
+        
+        .explanation {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: #444;
+        }
+        
+        .code-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2c3e50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px 6px 0 0;
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 0 0 6px 6px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .output-container {
+            background: var(--output-bg);
+            color: var(--output-text);
+            padding: 15px;
+            border-radius: 6px;
+            min-height: 60px;
+            font-family: 'Fira Code', monospace;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        
+        .output-header {
+            color: #4ec9b0;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .run-btn {
+            background: var(--run-btn-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .run-btn:hover {
+            background: var(--run-btn-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .run-btn:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            display: none;
+            color: #3498db;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+            font-size: 0.95rem;
+            margin-top: 20px;
+        }
+        
+        .trinket-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .trinket-link {
+            background: var(--trinket-bg);
+            padding: 12px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: var(--trinket-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .trinket-link:hover {
+            background: var(--trinket-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 600px) {
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .language-switch {
+                top: 10px;
+                left: 10px;
+            }
+            
+            .top-nav {
+                top: 60px;
+            }
+        }
+        
+        /* Syntax highlighting */
+        .keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .number { color: #b5cea8; }
+        .operator { color: #d4d4d4; }
+        
+        /* RTL adjustments */
+        [dir="rtl"] .examples-grid {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .nav-container {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .trinket-links {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .intro ul {
+            padding-right: 20px;
+            padding-left: 0;
+        }
+        
+        [dir="ltr"] .language-switch {
+            left: auto;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switch -->
+    <div class="language-switch">
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn active" data-lang="he">עברית</button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 data-i18n="title">הדגמת לולאות בפייתון</h1>
+            <p class="subtitle" data-i18n="subtitle">דוגמאות אינטראקטיביות לכל סוגי הלולאות בפייתון עם קוד שניתן להריץ</p>
+        </header>
+        
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-container" id="nav-container">
+                <!-- Navigation links will be added by JavaScript -->
+            </div>
+        </nav>
+        
+        <div class="intro">
+            <p data-i18n="intro1">דף זה מדגים את כל סוגי הלולאות בפייתון עם דוגמאות אינטראקטיביות שניתן להריץ. כל דוגמה כוללת:</p>
+            <ul style="margin-right: 20px; margin-top: 10px;">
+                <li data-i18n="intro2">הסבר ברור על סוג הלולאה</li>
+                <li data-i18n="intro3">קוד פייתון שניתן להריץ</li>
+                <li data-i18n="intro4">תצוגת פלט</li>
+            </ul>
+            <p data-i18n="intro5">לחצו על כפתור "הרץ קוד" מתחת לכל דוגמה כדי להריץ אותה ישירות בדפדפן שלכם!</p>
+        </div>
+        
+        <div class="examples-grid" id="examples-container">
+            <!-- Examples will be inserted here by JavaScript -->
+        </div>
+        
+        <div class="trinket-links">
+            <a href="https://trinket.io/python3/8f7c9a1b2d" target="_blank" class="trinket-link">
+                <i class="fas fa-laptop-code"></i>
+                <span data-i18n="trinket1">לולאות בסיסיות ב-Trinket</span>
+            </a>
+            <a href="https://trinket.io/python3/3e4f5a6b7c" target="_blank" class="trinket-link">
+                <i class="fas fa-laptop-code"></i>
+                <span data-i18n="trinket2">בקרת לולאות ב-Trinket</span>
+            </a>
+            <a href="https://trinket.io/python3/9d8c7b6a5e" target="_blank" class="trinket-link">
+                <i class="fas fa-laptop-code"></i>
+                <span data-i18n="trinket3">לולאות מתקדמות ב-Trinket</span>
+            </a>
+        </div>
+        
+        <footer>
+            <p data-i18n="footer1">הדגמת לולאות בפייתון | כל הדוגמאות רצות בדפדפן שלכם באמצעות Pyodide</p>
+            <p data-i18n="footer2">לחצו על "הרץ קוד" כדי להריץ כל דוגמה מבלי לעזוב את הדף!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Translations with complete explanations
+        const translations = {
+            en: {
+                title: "Python Loops Demonstration",
+                subtitle: "Interactive examples of all loop types in Python with runnable code",
+                intro1: "This page demonstrates all types of loops in Python with interactive, runnable examples. Each example includes:",
+                intro2: "Clear explanation of the loop type",
+                intro3: "Runnable Python code",
+                intro4: "Output display",
+                intro5: "Click the \"Run Code\" button below each example to execute it directly in your browser!",
+                trinket1: "Basic Loops on Trinket",
+                trinket2: "Loop Control on Trinket",
+                trinket3: "Advanced Loops on Trinket",
+                footer1: "Python Loops Demonstration | All examples run in your browser using Pyodide",
+                footer2: "Click \"Run Code\" to execute each example without leaving this page!",
+                runBtn: "▶️ Run Code",
+                outputHeader: "Output:",
+                loading: "Running code...",
+                noOutput: "No output",
+                error: "Error: ",
+                forRange: {
+                    title: "For Loop with range()",
+                    explanation: "The <code>for</code> loop with <code>range()</code> is used to iterate a specific number of times. <code>range(5)</code> generates numbers from 0 to 4."
+                },
+                forList: {
+                    title: "For Loop over a List",
+                    explanation: "You can iterate over any sequence (like a list) using a <code>for</code> loop. Each element is assigned to the loop variable in turn."
+                },
+                forString: {
+                    title: "For Loop over a String",
+                    explanation: "Strings are sequences of characters, so you can iterate over each character in a string using a <code>for</code> loop."
+                },
+                forEnumerate: {
+                    title: "For Loop with enumerate()",
+                    explanation: "The <code>enumerate()</code> function adds a counter to an iterable. It returns tuples containing the index and value."
+                },
+                whileBasic: {
+                    title: "While Loop",
+                    explanation: "The <code>while</code> loop repeats as long as a condition is true. Be careful to update the condition variable to avoid infinite loops!"
+                },
+                whileBreak: {
+                    title: "While Loop with break",
+                    explanation: "The <code>break</code> statement exits the loop immediately, even if the condition is still true. Often used with <code>while True</code> for infinite loops that need controlled exits."
+                },
+                whileContinue: {
+                    title: "While Loop with continue",
+                    explanation: "The <code>continue</code> statement skips the rest of the current iteration and moves to the next iteration of the loop."
+                },
+                nestedLoops: {
+                    title: "Nested Loops",
+                    explanation: "Loops can be nested inside other loops. The inner loop completes all its iterations for each iteration of the outer loop."
+                },
+                forElse: {
+                    title: "For Loop with else Clause",
+                    explanation: "The <code>else</code> clause in a loop executes only if the loop completes normally (without encountering a <code>break</code> statement)."
+                },
+                whileElse: {
+                    title: "While Loop with else Clause",
+                    explanation: "Similar to for loops, the <code>else</code> clause in a while loop executes only if the loop condition becomes false (not when broken with <code>break</code>)."
+                }
+            },
+            he: {
+                title: "הדגמת לולאות בפייתון",
+                subtitle: "דוגמאות אינטראקטיביות לכל סוגי הלולאות בפייתון עם קוד שניתן להריץ",
+                intro1: "דף זה מדגים את כל סוגי הלולאות בפייתון עם דוגמאות אינטראקטיביות שניתן להריץ. כל דוגמה כוללת:",
+                intro2: "הסבר ברור על סוג הלולאה",
+                intro3: "קוד פייתון שניתן להריץ",
+                intro4: "תצוגת פלט",
+                intro5: "לחצו על כפתור \"הרץ קוד\" מתחת לכל דוגמה כדי להריץ אותה ישירות בדפדפן שלכם!",
+                trinket1: "לולאות בסיסיות ב-Trinket",
+                trinket2: "בקרת לולאות ב-Trinket",
+                trinket3: "לולאות מתקדמות ב-Trinket",
+                footer1: "הדגמת לולאות בפייתון | כל הדוגמאות רצות בדפדפן שלכם באמצעות Pyodide",
+                footer2: "לחצו על \"הרץ קוד\" כדי להריץ כל דוגמה מבלי לעזוב את הדף!",
+                runBtn: "▶️ הרץ קוד",
+                outputHeader: "פלט:",
+                loading: "מריץ קוד...",
+                noOutput: "אין פלט",
+                error: "שגיאה: ",
+             forRange: {
+                    title: "לולאת for עם range()",
+                    explanation: "לולאת <code>for</code> עם <code>range()</code> משמשת לחזרה מספר פעמים מסוים. <code>range(5)</code> מייצר מספרים מ-0 עד 4."
+                },
+                forList: {
+                    title: "לולאת for על רשימה",
+                    explanation: "ניתן לחזור על כל רצף (כמו רשימה) באמצעות לולאת <code>for</code>. כל אלמנט מוקצה למשתנה הלולאה לפי התור."
+                },
+                forString: {
+                    title: "לולאת for על מחרוזת",
+                    explanation: "מחרוזות הן רצפים של תווים, לכן ניתן לחזור על כל תו במחרוזת באמצעות לולאת <code>for</code>."
+                },
+                forEnumerate: {
+                    title: "לולאת for עם enumerate()",
+                    explanation: "פונקציית <code>enumerate()</code> מוסיפה מונה לרצף. היא מחזירה טאפלים המכילים את האינדקס והערך."
+                },
+                whileBasic: {
+                    title: "לולאת while",
+                    explanation: "לולאת <code>while</code> חוזרת כל עוד התנאי נכון. שימו לב לעדכן את משתנה התנאי כדי להימנע מלולאות אינסופיות!"
+                },
+                whileBreak: {
+                    title: "לולאת while עם break",
+                    explanation: "הצהרת <code>break</code> יוצאת מהלולאה מיד, גם אם התנאי עדיין נכון. לעיתים קרובות משמשת עם <code>while True</code> ללולאות אינסופיות שזקוקות ליציאה מבוקרת."
+                },
+                whileContinue: {
+                    title: "לולאת while עם continue",
+                    explanation: "הצהרת <code>continue</code> מדלגת על שאר האיטרציה הנוכחית ועוברת לאיטרציה הבאה של הלולאה."
+                },
+                nestedLoops: {
+                    title: "לולאות מקוננות",
+                    explanation: "לולאות יכולות להיות מקוננות בתוך לולאות אחרות. הלולאה הפנימית משלימה את כל האיטרציות שלה עבור כל איטרציה של הלולאה החיצונית."
+                },
+                forElse: {
+                    title: "לולאת for עם else",
+                    explanation: "הביטוי <code>else</code> בלולאה מתבצע רק אם הלולאה מסתיימת באופן רגיל (ללא פגישה עם הצהרת <code>break</code>)."
+                },
+                whileElse: {
+                    title: "לולאת while עם else",
+                    explanation: "בדומה ללולאות for, הביטוי <code>else</code> בלולאת while מתבצע רק אם תנאי הלולאה הופך לשקרי (ולא כאשר נשבר עם <code>break</code>)."
+                }
+            }
+        };
+
+        // Example data
+        const examples = [
+            {
+                id: "for-range",
+                icon: "🔢",
+                code: `for i in range(5):
+    print(f"Iteration {i}")`
+            },
+            {
+                id: "for-list",
+                icon: "🍎",
+                code: `fruits = ["apple", "banana", "cherry"]
+for fruit in fruits:
+    print(f"Fruit: {fruit}")`
+            },
+            {
+                id: "for-string",
+                icon: "🔤",
+                code: `word = "hello"
+for char in word:
+    print(f"Character: {char}")`
+            },
+            {
+                id: "for-enumerate",
+                icon: "#️⃣",
+                code: `fruits = ["apple", "banana", "cherry"]
+for index, fruit in enumerate(fruits):
+    print(f"Index {index}: {fruit}")`
+            },
+            {
+                id: "while-basic",
+                icon: "🔄",
+                code: `count = 0
+while count < 3:
+    print(f"Count: {count}")
+    count += 1`
+            },
+            {
+                id: "while-break",
+                icon: "🛑",
+                code: `num = 0
+while True:
+    if num == 3:
+        break
+    print(f"Number: {num}")
+    num += 1`
+            },
+            {
+                id: "while-continue",
+                icon: "⏭️",
+                code: `counter = 0
+while counter < 5:
+    counter += 1
+    if counter == 3:
+        continue
+    print(f"Counter: {counter}")`
+            },
+            {
+                id: "nested-loops",
+                icon: "📦",
+                code: `for i in range(2):
+    for j in range(3):
+        print(f"({i}, {j})")`
+            },
+            {
+                id: "for-else",
+                icon: "✅",
+                code: `for i in range(3):
+    print(f"Loop iteration {i}")
+else:
+    print("Loop completed normally!")`
+            },
+            {
+                id: "while-else",
+                icon: "✅",
+                code: `x = 0
+while x < 2:
+    print(f"While iteration {x}")
+    x += 1
+else:
+    print("While loop completed normally!")`
+            }
+        ];
+
+        // Current language - Hebrew is default
+        let currentLang = 'he';
+        
+        // Initialize Pyodide
+        let pyodidePromise = null;
+        
+        function loadPyodideAndRun() {
+            if (!pyodidePromise) {
+                pyodidePromise = loadPyodide();
+            }
+            return pyodidePromise;
+        }
+
+        // Create example cards
+        function createExampleCard(example) {
+            const trans = translations[currentLang];
+            const key = example.id.replace(/-/g, '');
+            const title = trans[key] ? trans[key].title : example.id;
+            const explanation = trans[key] ? trans[key].explanation : '';
+            
+            return `
+            <div class="example-card" id="card-${example.id}">
+                <div class="card-header">
+                    <h2><span>${example.icon}</span> ${title}</h2>
+                </div>
+                <div class="card-content">
+                    <div class="explanation">
+                        ${explanation}
+                    </div>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>${currentLang === 'en' ? 'Python Code' : 'קוד פייתון'}</span>
+                            <button class="run-btn" data-id="${example.id}">
+                                <span>${trans.runBtn}</span>
+                            </button>
+                        </div>
+                        <pre id="code-${example.id}">${example.code}</pre>
+                    </div>
+                    <div class="output-container">
+                        <div class="output-header">${trans.outputHeader}</div>
+                        <div id="output-${example.id}">${trans.loading.replace('...', '')}</div>
+                    </div>
+                    <div class="loading" id="loading-${example.id}">${trans.loading}</div>
+                </div>
+            </div>
+            `;
+        }
+
+        // Render all examples
+        function renderExamples() {
+            const container = document.getElementById('examples-container');
+            container.innerHTML = '';
+            examples.forEach(example => {
+                container.innerHTML += createExampleCard(example);
+            });
+        }
+        
+        // Create navigation links
+        function createNavigation() {
+            const navContainer = document.getElementById('nav-container');
+            navContainer.innerHTML = '';
+            
+            examples.forEach(example => {
+                const trans = translations[currentLang];
+                const key = example.id.replace(/-/g, '');
+                const title = trans[key] ? trans[key].title : example.id;
+                
+                const link = document.createElement('a');
+                link.href = `#card-${example.id}`;
+                link.className = 'nav-link';
+                link.innerHTML = `<i class="fas fa-code"></i> ${title}`;
+                navContainer.appendChild(link);
+            });
+        }
+
+        // Update all text based on current language
+        function updateLanguage() {
+            const trans = translations[currentLang];
+            
+            // Update header
+            document.querySelector('[data-i18n="title"]').textContent = trans.title;
+            document.querySelector('[data-i18n="subtitle"]').textContent = trans.subtitle;
+            
+            // Update intro
+            document.querySelector('[data-i18n="intro1"]').textContent = trans.intro1;
+            document.querySelector('[data-i18n="intro2"]').textContent = trans.intro2;
+            document.querySelector('[data-i18n="intro3"]').textContent = trans.intro3;
+            document.querySelector('[data-i18n="intro4"]').textContent = trans.intro4;
+            document.querySelector('[data-i18n="intro5"]').textContent = trans.intro5;
+            
+            // Update Trinket links
+            document.querySelector('[data-i18n="trinket1"]').textContent = trans.trinket1;
+            document.querySelector('[data-i18n="trinket2"]').textContent = trans.trinket2;
+            document.querySelector('[data-i18n="trinket3"]').textContent = trans.trinket3;
+            
+            // Update footer
+            document.querySelector('[data-i18n="footer1"]').textContent = trans.footer1;
+            document.querySelector('[data-i18n="footer2"]').textContent = trans.footer2;
+            
+            // Update body direction
+            document.documentElement.setAttribute('lang', currentLang);
+            document.documentElement.setAttribute('dir', currentLang === 'he' ? 'rtl' : 'ltr');
+            
+            // Re-render examples and navigation
+            renderExamples();
+            createNavigation();
+        }
+
+        // Handle language switch
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLang = btn.getAttribute('data-lang');
+                updateLanguage();
+            });
+        });
+
+        // Handle run button clicks
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.run-btn')) {
+                const button = e.target.closest('.run-btn');
+                const exampleId = button.getAttribute('data-id');
+                const codeElement = document.getElementById(`code-${exampleId}`);
+                const outputElement = document.getElementById(`output-${exampleId}`);
+                const loadingElement = document.getElementById(`loading-${exampleId}`);
+                const trans = translations[currentLang];
+                
+                // Show loading
+                loadingElement.style.display = 'block';
+                outputElement.textContent = '';
+                outputElement.style.color = ''; // Reset color
+                button.disabled = true;
+                
+                try {
+                    // Get Pyodide instance
+                    const pyodide = await loadPyodideAndRun();
+                    
+                    // Capture stdout
+                    let output = '';
+                    pyodide.runPython(`
+                        import sys
+                        from io import StringIO
+                        old_stdout = sys.stdout
+                        sys.stdout = mystdout = StringIO()
+                    `);
+                    
+                    // Run the code
+                    pyodide.runPython(codeElement.textContent);
+                    
+                    // Get output
+                    output = pyodide.runPython('mystdout.getvalue()');
+                    pyodide.runPython('sys.stdout = old_stdout');
+                    
+                    outputElement.textContent = output || trans.noOutput;
+                    outputElement.style.color = trans.noOutput === output ? '#d4d4d4' : '#a6e22e';
+                } catch (error) {
+                    outputElement.textContent = `${trans.error}${error.message}`;
+                    outputElement.style.color = '#e74c3c';
+                } finally {
+                    // Hide loading
+                    loadingElement.style.display = 'none';
+                    button.disabled = false;
+                }
+            }
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preload Pyodide for better performance
+            loadPyodideAndRun();
+            
+            // Set initial language to Hebrew
+            updateLanguage();
+            
+            // Smooth scrolling for navigation links
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.nav-link')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.nav-link');
+                    const targetId = link.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        const offsetTop = targetElement.offsetTop - 100;
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
