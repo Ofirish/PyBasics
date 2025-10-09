@@ -200,7 +200,6 @@
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
             color: #444;
-            line-height: 1.6;
         }
         
         .usage-section {
@@ -218,7 +217,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1.1rem;
         }
         
         .usage-description {
@@ -234,7 +232,6 @@
             border-radius: 0 6px 6px 0;
             font-family: 'Fira Code', monospace;
             font-size: 0.9rem;
-            direction: ltr;
         }
         
         .code-container {
@@ -262,7 +259,6 @@
             font-family: 'Fira Code', monospace;
             font-size: 0.95rem;
             line-height: 1.5;
-            direction: ltr;
         }
         
         .output-container {
@@ -274,7 +270,6 @@
             font-family: 'Fira Code', monospace;
             white-space: pre-wrap;
             overflow-wrap: break-word;
-            direction: ltr;
         }
         
         .output-header {
@@ -823,7 +818,7 @@ else:
         // Create example cards
         function createExampleCard(example) {
             const trans = translations[currentLang];
-            const key = example.id.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+            const key = example.id.replace(/-/g, '');
             const title = trans[key] ? trans[key].title : example.id;
             const explanation = trans[key] ? trans[key].explanation : '';
             const usageTitle = trans[key] ? trans[key].usageTitle : '';
@@ -884,34 +879,6 @@ else:
             examples.forEach(example => {
                 container.innerHTML += createExampleCard(example);
             });
-            
-            // Add syntax highlighting after rendering
-            highlightCode();
-        }
-        
-        // Simple syntax highlighting
-        function highlightCode() {
-            document.querySelectorAll('pre').forEach(pre => {
-                let code = pre.textContent;
-                
-                // Highlight Python keywords
-                code = code.replace(/\b(for|while|if|else|elif|break|continue|in|range|enumerate|True|False|def|return|import|from|as)\b/g, 
-                    '<span class="keyword">$1</span>');
-                
-                // Highlight strings
-                code = code.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, 
-                    '<span class="string">$&</span>');
-                
-                // Highlight comments
-                code = code.replace(/#.*$/gm, 
-                    '<span class="comment">$&</span>');
-                
-                // Highlight numbers
-                code = code.replace(/\b\d+\b/g, 
-                    '<span class="number">$&</span>');
-                
-                pre.innerHTML = code;
-            });
         }
         
         // Create navigation links
@@ -921,7 +888,7 @@ else:
             
             examples.forEach(example => {
                 const trans = translations[currentLang];
-                const key = example.id.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+                const key = example.id.replace(/-/g, '');
                 const title = trans[key] ? trans[key].title : example.id;
                 
                 const link = document.createElement('a');
@@ -936,19 +903,23 @@ else:
         function updateLanguage() {
             const trans = translations[currentLang];
             
-            // Update elements that need HTML
-            document.querySelector('[data-i18n="intro1"]').innerHTML = trans.intro1;
-            document.querySelector('[data-i18n="intro2"]').innerHTML = trans.intro2;
-            document.querySelector('[data-i18n="intro3"]').innerHTML = trans.intro3;
-            document.querySelector('[data-i18n="intro4"]').innerHTML = trans.intro4;
-            document.querySelector('[data-i18n="intro5"]').innerHTML = trans.intro5;
-            
-            // Update elements that should be text only
+            // Update header
             document.querySelector('[data-i18n="title"]').textContent = trans.title;
             document.querySelector('[data-i18n="subtitle"]').textContent = trans.subtitle;
+            
+            // Update intro
+            document.querySelector('[data-i18n="intro1"]').textContent = trans.intro1;
+            document.querySelector('[data-i18n="intro2"]').textContent = trans.intro2;
+            document.querySelector('[data-i18n="intro3"]').textContent = trans.intro3;
+            document.querySelector('[data-i18n="intro4"]').textContent = trans.intro4;
+            document.querySelector('[data-i18n="intro5"]').textContent = trans.intro5;
+            
+            // Update Trinket links
             document.querySelector('[data-i18n="trinket1"]').textContent = trans.trinket1;
             document.querySelector('[data-i18n="trinket2"]').textContent = trans.trinket2;
             document.querySelector('[data-i18n="trinket3"]').textContent = trans.trinket3;
+            
+            // Update footer
             document.querySelector('[data-i18n="footer1"]').textContent = trans.footer1;
             document.querySelector('[data-i18n="footer2"]').textContent = trans.footer2;
             
@@ -1000,9 +971,8 @@ else:
                         sys.stdout = mystdout = StringIO()
                     `);
                     
-                    // Run the code - get raw text without HTML tags
-                    const rawCode = codeElement.textContent || codeElement.innerText;
-                    pyodide.runPython(rawCode);
+                    // Run the code
+                    pyodide.runPython(codeElement.textContent);
                     
                     // Get output
                     output = pyodide.runPython('mystdout.getvalue()');

@@ -28,8 +28,6 @@
             --border-color: #eee;
             --trinket-bg: #e1f0fa;
             --trinket-color: #2980b9;
-            --explanation-bg: #f8f9fa;
-            --explanation-border: #e9ecef;
         }
         
         [dir="ltr"] {
@@ -200,41 +198,6 @@
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
             color: #444;
-            line-height: 1.6;
-        }
-        
-        .usage-section {
-            background: var(--explanation-bg);
-            border: 1px solid var(--explanation-border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .usage-title {
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .usage-description {
-            margin-bottom: 15px;
-            line-height: 1.6;
-        }
-        
-        .usage-example {
-            background: #f8f9fa;
-            border-left: 4px solid #3498db;
-            padding: 12px 15px;
-            margin: 10px 0;
-            border-radius: 0 6px 6px 0;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-            direction: ltr;
         }
         
         .code-container {
@@ -262,7 +225,6 @@
             font-family: 'Fira Code', monospace;
             font-size: 0.95rem;
             line-height: 1.5;
-            direction: ltr;
         }
         
         .output-container {
@@ -274,7 +236,6 @@
             font-family: 'Fira Code', monospace;
             white-space: pre-wrap;
             overflow-wrap: break-word;
-            direction: ltr;
         }
         
         .output-header {
@@ -437,24 +398,6 @@
             <p data-i18n="intro5">לחצו על כפתור "הרץ קוד" מתחת לכל דוגמה כדי להריץ אותה ישירות בדפדפן שלכם!</p>
         </div>
         
-        <div class="examples-grid" id="examples-container">
-            <!-- Examples will be inserted here by JavaScript -->
-        </div>
-        
-        <div class="trinket-links">
-            <a href="https://trinket.io/python3/8f7c9a1b2d" target="_blank" class="trinket-link">
-                <i class="fas fa-laptop-code"></i>
-                <span data-i18n="trinket1">לולאות בסיסיות ב-Trinket</span>
-            </a>
-            <a href="https://trinket.io/python3/3e4f5a6b7c" target="_blank" class="trinket-link">
-                <i class="fas fa-laptop-code"></i>
-                <span data-i18n="trinket2">בקרת לולאות ב-Trinket</span>
-            </a>
-            <a href="https://trinket.io/python3/9d8c7b6a5e" target="_blank" class="trinket-link">
-                <i class="fas fa-laptop-code"></i>
-                <span data-i18n="trinket3">לולאות מתקדמות ב-Trinket</span>
-            </a>
-        </div>
         
         <footer>
             <p data-i18n="footer1">הדגמת לולאות בפייתון | כל הדוגמאות רצות בדפדפן שלכם באמצעות Pyodide</p>
@@ -463,7 +406,7 @@
     </div>
 
     <script>
-        // Translations with complete explanations and usage examples
+        // Translations with complete explanations
         const translations = {
             en: {
                 title: "Python Loops Demonstration",
@@ -485,112 +428,43 @@
                 error: "Error: ",
                 forRange: {
                     title: "For Loop with range()",
-                    explanation: "The <code>for</code> loop with <code>range()</code> is used to iterate a specific number of times. <code>range(5)</code> generates numbers from 0 to 4.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "The <code>range()</code> function creates a sequence of numbers. You can specify start, stop, and step values:",
-                    usageExamples: [
-                        "range(5) → 0, 1, 2, 3, 4",
-                        "range(2, 6) → 2, 3, 4, 5", 
-                        "range(1, 10, 2) → 1, 3, 5, 7, 9"
-                    ]
+                    explanation: "The <code>for</code> loop with <code>range()</code> is used to iterate a specific number of times. <code>range(5)</code> generates numbers from 0 to 4."
                 },
                 forList: {
                     title: "For Loop over a List",
-                    explanation: "You can iterate over any sequence (like a list) using a <code>for</code> loop. Each element is assigned to the loop variable in turn.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "You can iterate over any iterable object. Common examples include:",
-                    usageExamples: [
-                        "Lists: [1, 2, 3, 4, 5]",
-                        "Tuples: ('a', 'b', 'c')",
-                        "Dictionaries (keys): {'name': 'John', 'age': 30}"
-                    ]
+                    explanation: "You can iterate over any sequence (like a list) using a <code>for</code> loop. Each element is assigned to the loop variable in turn."
                 },
                 forString: {
                     title: "For Loop over a String",
-                    explanation: "Strings are sequences of characters, so you can iterate over each character in a string using a <code>for</code> loop.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "When iterating over strings, you can access each character individually. Useful for:",
-                    usageExamples: [
-                        "Counting characters",
-                        "Finding specific characters",
-                        "String manipulation and processing"
-                    ]
+                    explanation: "Strings are sequences of characters, so you can iterate over each character in a string using a <code>for</code> loop."
                 },
                 forEnumerate: {
                     title: "For Loop with enumerate()",
-                    explanation: "The <code>enumerate()</code> function adds a counter to an iterable. It returns tuples containing the index and value.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "<code>enumerate()</code> is useful when you need both the index and the value. You can also specify a starting index:",
-                    usageExamples: [
-                        "enumerate(['a', 'b', 'c']) → (0, 'a'), (1, 'b'), (2, 'c')",
-                        "enumerate(['a', 'b', 'c'], 1) → (1, 'a'), (2, 'b'), (3, 'c')"
-                    ]
+                    explanation: "The <code>enumerate()</code> function adds a counter to an iterable. It returns tuples containing the index and value."
                 },
                 whileBasic: {
                     title: "While Loop",
-                    explanation: "The <code>while</code> loop repeats as long as a condition is true. Be careful to update the condition variable to avoid infinite loops!",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "Use <code>while</code> loops when you don't know how many iterations you need in advance. Common use cases:",
-                    usageExamples: [
-                        "User input validation",
-                        "Game loops",
-                        "Processing until a condition is met"
-                    ]
+                    explanation: "The <code>while</code> loop repeats as long as a condition is true. Be careful to update the condition variable to avoid infinite loops!"
                 },
                 whileBreak: {
                     title: "While Loop with break",
-                    explanation: "The <code>break</code> statement exits the loop immediately, even if the condition is still true. Often used with <code>while True</code> for infinite loops that need controlled exits.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "<code>break</code> is useful for exiting loops based on specific conditions. Common patterns:",
-                    usageExamples: [
-                        "while True: ... if condition: break",
-                        "Searching for an item in a collection",
-                        "Exiting on user command (e.g., 'quit')"
-                    ]
+                    explanation: "The <code>break</code> statement exits the loop immediately, even if the condition is still true. Often used with <code>while True</code> for infinite loops that need controlled exits."
                 },
                 whileContinue: {
                     title: "While Loop with continue",
-                    explanation: "The <code>continue</code> statement skips the rest of the current iteration and moves to the next iteration of the loop.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "Use <code>continue</code> to skip certain iterations without exiting the loop entirely. Useful for:",
-                    usageExamples: [
-                        "Skipping invalid data",
-                        "Processing only specific items",
-                        "Avoiding nested if statements"
-                    ]
+                    explanation: "The <code>continue</code> statement skips the rest of the current iteration and moves to the next iteration of the loop."
                 },
                 nestedLoops: {
                     title: "Nested Loops",
-                    explanation: "Loops can be nested inside other loops. The inner loop completes all its iterations for each iteration of the outer loop.",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "Nested loops are useful for working with multi-dimensional data. Common applications:",
-                    usageExamples: [
-                        "Processing 2D arrays/matrices",
-                        "Generating combinations",
-                        "Working with grids or tables"
-                    ]
+                    explanation: "Loops can be nested inside other loops. The inner loop completes all its iterations for each iteration of the outer loop."
                 },
                 forElse: {
                     title: "For Loop with else Clause",
-                    explanation: "The <code>else</code> clause in a loop executes only if the loop completes normally (without encountering a <code>break</code> statement).",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "The <code>else</code> clause in loops is often misunderstood. It runs when:",
-                    usageExamples: [
-                        "The loop finishes naturally (no break)",
-                        "Useful for search operations - else runs if item not found",
-                        "Can be used with both for and while loops"
-                    ]
+                    explanation: "The <code>else</code> clause in a loop executes only if the loop completes normally (without encountering a <code>break</code> statement)."
                 },
                 whileElse: {
                     title: "While Loop with else Clause",
-                    explanation: "Similar to for loops, the <code>else</code> clause in a while loop executes only if the loop condition becomes false (not when broken with <code>break</code>).",
-                    usageTitle: "📝 Usage and Examples",
-                    usageDescription: "The <code>else</code> clause in while loops behaves the same as in for loops. It's useful for:",
-                    usageExamples: [
-                        "Running cleanup code after normal loop completion",
-                        "Handling the 'not found' case in searches",
-                        "Executing code only when loop completes naturally"
-                    ]
+                    explanation: "Similar to for loops, the <code>else</code> clause in a while loop executes only if the loop condition becomes false (not when broken with <code>break</code>)."
                 }
             },
             he: {
@@ -611,114 +485,45 @@
                 loading: "מריץ קוד...",
                 noOutput: "אין פלט",
                 error: "שגיאה: ",
-                forRange: {
+             forRange: {
                     title: "לולאת for עם range()",
-                    explanation: "לולאת <code>for</code> עם <code>range()</code> משמשת לחזרה מספר פעמים מסוים. <code>range(5)</code> מייצר מספרים מ-0 עד 4.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "פונקציית <code>range()</code> יוצרת רצף של מספרים. ניתן לציין ערכי התחלה, עצירה וצעד:",
-                    usageExamples: [
-                        "range(5) → 0, 1, 2, 3, 4",
-                        "range(2, 6) → 2, 3, 4, 5", 
-                        "range(1, 10, 2) → 1, 3, 5, 7, 9"
-                    ]
+                    explanation: "לולאת <code>for</code> עם <code>range()</code> משמשת לחזרה מספר פעמים מסוים. <code>range(5)</code> מייצר מספרים מ-0 עד 4."
                 },
                 forList: {
                     title: "לולאת for על רשימה",
-                    explanation: "ניתן לחזור על כל רצף (כמו רשימה) באמצעות לולאת <code>for</code>. כל אלמנט מוקצה למשתנה הלולאה לפי התור.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "ניתן לחזור על כל אובייקט שניתן לעבור עליו. דוגמאות נפוצות כוללות:",
-                    usageExamples: [
-                        "רשימות: [1, 2, 3, 4, 5]",
-                        "תפלים: ('a', 'b', 'c')",
-                        "מילונים (מפתחות): {'name': 'John', 'age': 30}"
-                    ]
+                    explanation: "ניתן לחזור על כל רצף (כמו רשימה) באמצעות לולאת <code>for</code>. כל אלמנט מוקצה למשתנה הלולאה לפי התור."
                 },
                 forString: {
                     title: "לולאת for על מחרוזת",
-                    explanation: "מחרוזות הן רצפים של תווים, לכן ניתן לחזור על כל תו במחרוזת באמצעות לולאת <code>for</code>.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "כאשר חוזרים על מחרוזות, ניתן לגשת לכל תו בנפרד. שימושי עבור:",
-                    usageExamples: [
-                        "ספירת תווים",
-                        "מציאת תווים ספציפיים",
-                        "עיבוד ומניפולציה של מחרוזות"
-                    ]
+                    explanation: "מחרוזות הן רצפים של תווים, לכן ניתן לחזור על כל תו במחרוזת באמצעות לולאת <code>for</code>."
                 },
                 forEnumerate: {
                     title: "לולאת for עם enumerate()",
-                    explanation: "פונקציית <code>enumerate()</code> מוסיפה מונה לרצף. היא מחזירה טאפלים המכילים את האינדקס והערך.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "<code>enumerate()</code> שימושית כאשר צריך גם את האינדקס וגם את הערך. ניתן גם לציין אינדקס התחלתי:",
-                    usageExamples: [
-                        "enumerate(['a', 'b', 'c']) → (0, 'a'), (1, 'b'), (2, 'c')",
-                        "enumerate(['a', 'b', 'c'], 1) → (1, 'a'), (2, 'b'), (3, 'c')"
-                    ]
+                    explanation: "פונקציית <code>enumerate()</code> מוסיפה מונה לרצף. היא מחזירה טאפלים המכילים את האינדקס והערך."
                 },
                 whileBasic: {
                     title: "לולאת while",
-                    explanation: "לולאת <code>while</code> חוזרת כל עוד התנאי נכון. שימו לב לעדכן את משתנה התנאי כדי להימנע מלולאות אינסופיות!",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "השתמשו בלולאות <code>while</code> כאשר אינכם יודעים כמה איטרציות תצטרכו מראש. מקרי שימוש נפוצים:",
-                    usageExamples: [
-                        "אימות קלט משתמש",
-                        "לולאות משחק",
-                        "עיבוד עד שמתקיים תנאי מסוים"
-                    ]
+                    explanation: "לולאת <code>while</code> חוזרת כל עוד התנאי נכון. שימו לב לעדכן את משתנה התנאי כדי להימנע מלולאות אינסופיות!"
                 },
                 whileBreak: {
                     title: "לולאת while עם break",
-                    explanation: "הצהרת <code>break</code> יוצאת מהלולאה מיד, גם אם התנאי עדיין נכון. לעיתים קרובות משמשת עם <code>while True</code> ללולאות אינסופיות שזקוקות ליציאה מבוקרת.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "<code>break</code> שימושית ליציאה מלולאות על סמך תנאים ספציפיים. תבניות נפוצות:",
-                    usageExamples: [
-                        "while True: ... if condition: break",
-                        "חיפוש פריט באוסף",
-                        "יציאה על פי פקודת משתמש (למשל, 'quit')"
-                    ]
+                    explanation: "הצהרת <code>break</code> יוצאת מהלולאה מיד, גם אם התנאי עדיין נכון. לעיתים קרובות משמשת עם <code>while True</code> ללולאות אינסופיות שזקוקות ליציאה מבוקרת."
                 },
                 whileContinue: {
                     title: "לולאת while עם continue",
-                    explanation: "הצהרת <code>continue</code> מדלגת על שאר האיטרציה הנוכחית ועוברת לאיטרציה הבאה של הלולאה.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "השתמשו ב-<code>continue</code> כדי לדלג על איטרציות מסוימות מבלי לצאת מהלולאה לחלוטין. שימושי עבור:",
-                    usageExamples: [
-                        "דילוג על נתונים לא תקינים",
-                        "עיבוד פריטים ספציפיים בלבד",
-                        "הימנעות מהצהרות if מקוננות"
-                    ]
+                    explanation: "הצהרת <code>continue</code> מדלגת על שאר האיטרציה הנוכחית ועוברת לאיטרציה הבאה של הלולאה."
                 },
                 nestedLoops: {
                     title: "לולאות מקוננות",
-                    explanation: "לולאות יכולות להיות מקוננות בתוך לולאות אחרות. הלולאה הפנימית משלימה את כל האיטרציות שלה עבור כל איטרציה של הלולאה החיצונית.",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "לולאות מקוננות שימושיות לעבודה עם נתונים רב-ממדיים. יישומים נפוצים:",
-                    usageExamples: [
-                        "עיבוד מערכים/מטריצות דו-ממדיות",
-                        "יצירת קומבינציות",
-                        "עבודה עם רשתות או טבלאות"
-                    ]
+                    explanation: "לולאות יכולות להיות מקוננות בתוך לולאות אחרות. הלולאה הפנימית משלימה את כל האיטרציות שלה עבור כל איטרציה של הלולאה החיצונית."
                 },
                 forElse: {
                     title: "לולאת for עם else",
-                    explanation: "הביטוי <code>else</code> בלולאה מתבצע רק אם הלולאה מסתיימת באופן רגיל (ללא פגישה עם הצהרת <code>break</code>).",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "הביטוי <code>else</code> בלולאות מובן לעיתים קרובות לא נכון. הוא רץ כאשר:",
-                    usageExamples: [
-                        "הלולאה מסתיימת באופן טבעי (ללא break)",
-                        "שימושי לפעולות חיפוש - else רץ אם הפריט לא נמצא",
-                        "ניתן להשתמש עם לולאות for וגם while"
-                    ]
+                    explanation: "הביטוי <code>else</code> בלולאה מתבצע רק אם הלולאה מסתיימת באופן רגיל (ללא פגישה עם הצהרת <code>break</code>)."
                 },
                 whileElse: {
                     title: "לולאת while עם else",
-                    explanation: "בדומה ללולאות for, הביטוי <code>else</code> בלולאת while מתבצע רק אם תנאי הלולאה הופך לשקרי (ולא כאשר נשבר עם <code>break</code>).",
-                    usageTitle: "📝 שימוש ודוגמאות",
-                    usageDescription: "הביטוי <code>else</code> בלולאות while מתנהג כמו בלולאות for. הוא שימושי עבור:",
-                    usageExamples: [
-                        "הרצת קוד ניקוי לאחר השלמת לולאה רגילה",
-                        "טיפול במקרה 'לא נמצא' בחיפושים",
-                        "ביצוע קוד רק כאשר הלולאה מסתיימת באופן טבעי"
-                    ]
+                    explanation: "בדומה ללולאות for, הביטוי <code>else</code> בלולאת while מתבצע רק אם תנאי הלולאה הופך לשקרי (ולא כאשר נשבר עם <code>break</code>)."
                 }
             }
         };
@@ -823,30 +628,9 @@ else:
         // Create example cards
         function createExampleCard(example) {
             const trans = translations[currentLang];
-            const key = example.id.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+            const key = example.id.replace(/-/g, '');
             const title = trans[key] ? trans[key].title : example.id;
             const explanation = trans[key] ? trans[key].explanation : '';
-            const usageTitle = trans[key] ? trans[key].usageTitle : '';
-            const usageDescription = trans[key] ? trans[key].usageDescription : '';
-            const usageExamples = trans[key] ? trans[key].usageExamples : [];
-            
-            let usageSection = '';
-            if (usageTitle && usageDescription) {
-                let examplesHtml = '';
-                if (usageExamples.length > 0) {
-                    examplesHtml = usageExamples.map(example => 
-                        `<div class="usage-example">${example}</div>`
-                    ).join('');
-                }
-                
-                usageSection = `
-                <div class="usage-section">
-                    <div class="usage-title">${usageTitle}</div>
-                    <div class="usage-description">${usageDescription}</div>
-                    ${examplesHtml}
-                </div>
-                `;
-            }
             
             return `
             <div class="example-card" id="card-${example.id}">
@@ -857,7 +641,6 @@ else:
                     <div class="explanation">
                         ${explanation}
                     </div>
-                    ${usageSection}
                     <div class="code-container">
                         <div class="code-header">
                             <span>${currentLang === 'en' ? 'Python Code' : 'קוד פייתון'}</span>
@@ -884,34 +667,6 @@ else:
             examples.forEach(example => {
                 container.innerHTML += createExampleCard(example);
             });
-            
-            // Add syntax highlighting after rendering
-            highlightCode();
-        }
-        
-        // Simple syntax highlighting
-        function highlightCode() {
-            document.querySelectorAll('pre').forEach(pre => {
-                let code = pre.textContent;
-                
-                // Highlight Python keywords
-                code = code.replace(/\b(for|while|if|else|elif|break|continue|in|range|enumerate|True|False|def|return|import|from|as)\b/g, 
-                    '<span class="keyword">$1</span>');
-                
-                // Highlight strings
-                code = code.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, 
-                    '<span class="string">$&</span>');
-                
-                // Highlight comments
-                code = code.replace(/#.*$/gm, 
-                    '<span class="comment">$&</span>');
-                
-                // Highlight numbers
-                code = code.replace(/\b\d+\b/g, 
-                    '<span class="number">$&</span>');
-                
-                pre.innerHTML = code;
-            });
         }
         
         // Create navigation links
@@ -921,7 +676,7 @@ else:
             
             examples.forEach(example => {
                 const trans = translations[currentLang];
-                const key = example.id.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+                const key = example.id.replace(/-/g, '');
                 const title = trans[key] ? trans[key].title : example.id;
                 
                 const link = document.createElement('a');
@@ -936,19 +691,23 @@ else:
         function updateLanguage() {
             const trans = translations[currentLang];
             
-            // Update elements that need HTML
-            document.querySelector('[data-i18n="intro1"]').innerHTML = trans.intro1;
-            document.querySelector('[data-i18n="intro2"]').innerHTML = trans.intro2;
-            document.querySelector('[data-i18n="intro3"]').innerHTML = trans.intro3;
-            document.querySelector('[data-i18n="intro4"]').innerHTML = trans.intro4;
-            document.querySelector('[data-i18n="intro5"]').innerHTML = trans.intro5;
-            
-            // Update elements that should be text only
+            // Update header
             document.querySelector('[data-i18n="title"]').textContent = trans.title;
             document.querySelector('[data-i18n="subtitle"]').textContent = trans.subtitle;
+            
+            // Update intro
+            document.querySelector('[data-i18n="intro1"]').textContent = trans.intro1;
+            document.querySelector('[data-i18n="intro2"]').textContent = trans.intro2;
+            document.querySelector('[data-i18n="intro3"]').textContent = trans.intro3;
+            document.querySelector('[data-i18n="intro4"]').textContent = trans.intro4;
+            document.querySelector('[data-i18n="intro5"]').textContent = trans.intro5;
+            
+            // Update Trinket links
             document.querySelector('[data-i18n="trinket1"]').textContent = trans.trinket1;
             document.querySelector('[data-i18n="trinket2"]').textContent = trans.trinket2;
             document.querySelector('[data-i18n="trinket3"]').textContent = trans.trinket3;
+            
+            // Update footer
             document.querySelector('[data-i18n="footer1"]').textContent = trans.footer1;
             document.querySelector('[data-i18n="footer2"]').textContent = trans.footer2;
             
@@ -1000,9 +759,8 @@ else:
                         sys.stdout = mystdout = StringIO()
                     `);
                     
-                    // Run the code - get raw text without HTML tags
-                    const rawCode = codeElement.textContent || codeElement.innerText;
-                    pyodide.runPython(rawCode);
+                    // Run the code
+                    pyodide.runPython(codeElement.textContent);
                     
                     // Get output
                     output = pyodide.runPython('mystdout.getvalue()');
