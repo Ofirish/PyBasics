@@ -221,6 +221,35 @@
         }
         
         /* ======================== 
+           עיצוב להדפסה (@media print)
+           ======================== */
+        @media print {
+            body { 
+                background-color: #fff; 
+                color: #000; 
+                font-size: 12pt; 
+                margin: 0;
+                padding: 0;
+            }
+            .container, .collapsible, .print-button, .pyloops-link, .footer { 
+                display: none !important; 
+            }
+            .print-output {
+                display: block !important;
+                white-space: pre-wrap;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+                font-size: 12pt;
+                line-height: 1.4;
+                margin: 0;
+                padding: 20px;
+                background: white;
+                color: black;
+                border: none;
+                box-shadow: none;
+            }
+        }
+        
+        /* ======================== 
            אלמנטים נוספים
            ======================== */
         .tip-box {
@@ -292,7 +321,15 @@
         }
 
         .print-output {
+            background: #F5F9FF;
+            border: 2px solid var(--primary-blue);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            white-space: pre-wrap;
             display: none;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -496,7 +533,8 @@ else:
             </div>
         </div>
         
-        <button class="print-button" onclick="printAllSections()">הדפס את כל הסעיפים</button>
+        <button class="print-button" onclick="prepareForPrinting()">הדפס את כל הסעיפים</button>
+        <div id="printOutput" class="print-output"></div>
 
         <div class="footer">
             <p>🎉 כל הכבוד! התחלתם את המסע בעולם התכנות עם פייתון.</p>
@@ -526,94 +564,11 @@ else:
             });
         }
 
-        // פונקציה להדפסת כל הסעיפים
-        function printAllSections() {
+        // הכנה להדפסה - איסוף כל התוכן
+        function prepareForPrinting() {
             var sections = document.getElementsByClassName("collapsible");
-            var printContent = `
-                <!DOCTYPE html>
-                <html lang="he" dir="rtl">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>יסודות פייתון - מדריך מלא</title>
-                    <style>
-                        body {
-                            font-family: 'Segoe UI', 'Arial', sans-serif;
-                            line-height: 1.6;
-                            margin: 20px;
-                            color: #000;
-                            font-size: 14pt;
-                        }
-                        h1 {
-                            text-align: center;
-                            color: #4A90E2;
-                            border-bottom: 2px solid #FFD166;
-                            padding-bottom: 10px;
-                        }
-                        h2 {
-                            color: #4A90E2;
-                            border-bottom: 1px solid #7FB3FF;
-                            padding-bottom: 5px;
-                            margin-top: 25px;
-                        }
-                        h3 {
-                            color: #2D3748;
-                        }
-                        .section {
-                            margin-bottom: 20px;
-                            page-break-inside: avoid;
-                        }
-                        .concept {
-                            margin-bottom: 15px;
-                            padding: 15px;
-                            background-color: #f8f8f8;
-                            border-radius: 8px;
-                        }
-                        code, pre {
-                            background-color: #f0f0f0;
-                            color: #000;
-                            padding: 2px 4px;
-                            border-radius: 4px;
-                            font-family: 'Courier New', monospace;
-                            direction: ltr;
-                            text-align: left;
-                            white-space: pre-wrap;
-                            font-size: 12pt;
-                            border-left: 3px solid #FFD166;
-                        }
-                        pre {
-                            padding: 12px;
-                            overflow-x: auto;
-                        }
-                        .tip-box {
-                            background-color: #FFF9DB;
-                            border-right: 3px solid #FFD166;
-                            padding: 10px;
-                            border-radius: 6px;
-                            margin: 10px 0;
-                        }
-                        .example-box {
-                            background-color: #E3F2FD;
-                            border-right: 3px solid #4A90E2;
-                            padding: 10px;
-                            border-radius: 6px;
-                            margin: 10px 0;
-                        }
-                        .warning-box {
-                            background-color: #FFE8E8;
-                            border-right: 3px solid #EF476F;
-                            padding: 10px;
-                            border-radius: 6px;
-                            margin: 10px 0;
-                        }
-                        @media print {
-                            body { margin: 0; padding: 15px; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h1>יסודות פייתון: מוסברים בפשטות</h1>
-            `;
-
+            var output = "";
+            
             // פתח את כל הסעיפים לפני איסוף התוכן
             for (var i = 0; i < sections.length; i++) {
                 var content = sections[i].nextElementSibling;
@@ -622,43 +577,34 @@ else:
                 content.style.paddingBottom = "20px";
                 sections[i].classList.add("active");
             }
-
+            
             // המתין קצת כדי שהאנימציה תסתיים
             setTimeout(function() {
                 for (var i = 0; i < sections.length; i++) {
                     var title = sections[i].querySelector(".collapsible-text").innerText.trim();
                     var content = sections[i].nextElementSibling;
                     
-                    // הוסף את התוכן להדפסה
-                    printContent += `
-                        <div class="section">
-                            <h2>${title}</h2>
-                            ${content.innerHTML}
-                        </div>
-                    `;
+                    // הסר את ה-HTML מהתוכן כדי לקבל טקסט נקי
+                    var contentText = content.innerText.trim();
+                    output += (i+1) + ". " + title + "\n";
+                    output += contentText + "\n\n";
                 }
-
-                printContent += `
-                        <div style="text-align: center; margin-top: 30px; font-style: italic;">
-                            🎉 כל הכבוד! התחלתם את המסע בעולם התכנות עם פייתון.
-                        </div>
-                    </body>
-                    </html>
-                `;
-
-                // פתח חלון חדש להדפסה
-                var printWindow = window.open('', '_blank');
-                printWindow.document.write(printContent);
-                printWindow.document.close();
                 
-                // המתן לטעינת התוכן ואז הדפס
-                printWindow.onload = function() {
-                    printWindow.print();
-                    // אפשר לסגור את החלון לאחר ההדפסה (אופציונלי)
-                    // printWindow.close();
-                };
+                // הצג את התוצאה והדפס רק אותה
+                var printDiv = document.getElementById("printOutput");
+                printDiv.innerText = output;
+                printDiv.style.display = "block";
+                
+                // הדפס רק את ה-printOutput
+                window.print();
             }, 500);
         }
+
+        // לאחר ההדפסה, הסתר שוב את ה-printOutput
+        window.onafterprint = function() {
+            var printDiv = document.getElementById("printOutput");
+            printDiv.style.display = "none";
+        };
     </script>
 </body>
 </html>
